@@ -42,8 +42,11 @@ LOCAL_C_INCLUDES += \
     $(LOCAL_PATH)/self-test
 
 #variables for NFC_NXP_CHIP_TYPE
+ifeq ($(NFC_NXP_CHIP_TYPE),PN547C2)
 PN547C2 := 1
+else
 PN548C2 := 2
+endif
 
 ifeq ($(PN547C2),1)
 LOCAL_CFLAGS += -DPN547C2=1
