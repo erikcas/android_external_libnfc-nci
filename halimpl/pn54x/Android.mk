@@ -13,23 +13,12 @@
 # limitations under the License.
 
 
-# function to find all *.cpp files under a directory
-define all-cpp-files-under
-$(patsubst ./%,%, \
-  $(shell cd $(LOCAL_PATH) ; \
-          find $(1) -name "*.cpp" -and -not -name ".*") \
- )
-endef
-
-LOCAL_PRELINK_MODULE := false
-LOCAL_ARM_MODE := arm
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE := nfc_nci.$(TARGET_BOARD_PLATFORM)
 LOCAL_MODULE_RELATIVE_PATH := hw
-LOCAL_SRC_FILES := $(call all-c-files-under, .)  $(call all-cpp-files-under, .)
+LOCAL_SRC_FILES := $(call all-subdir-c-files)  $(call all-subdir-cpp-files)
 LOCAL_SHARED_LIBRARIES := liblog libcutils libhardware_legacy libdl libhardware
-LOCAL_MODULE_TAGS := optional
 
 LOCAL_C_INCLUDES += \
     $(LOCAL_PATH)/utils \
@@ -69,4 +58,12 @@ LOCAL_CFLAGS += -DNFC_NXP_HFO_SETTINGS=FALSE
 #-DNXP_PN547C1_DOWNLOAD
 LOCAL_ADDITIONAL_DEPENDENCIES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+
+NFC_DEVICE := /dev/pn54x
+ifneq ($(BOARD_NFC_DEVICE),)
+    NFC_DEVICE := $(BOARD_NFC_DEVICE)
+endif
+
+LOCAL_CFLAGS += -DNXP_NFC_DEVICE="\"$(NFC_DEVICE)\""
+
 include $(BUILD_SHARED_LIBRARY)
